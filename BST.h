@@ -1,3 +1,5 @@
+/************************************************  Preprocessing  ************************************************/
+
 #ifndef BST_H
 #define BST_H
 
@@ -6,6 +8,9 @@
 #include <vector>
 #include <list>
 
+/************************************************  Used Data Structures  ************************************************/
+
+// node data structure to hold important fields
 template<typename T>
 struct node{
 	T value;
@@ -14,6 +19,7 @@ struct node{
 	node<T> *right;
 };
 
+// data structure to hold important info about the results of searching for a a value in a tree
 template<typename T>
 struct search_result{
 	bool found;
@@ -21,81 +27,228 @@ struct search_result{
 	node<T> *result_node;
 };
 
+/************************************************  API  ************************************************/
+
+// templated BST header file
 template<class T> 
 class BST{
 
 	public:
+
+		/**
+		 *	Constructor to initialize member variables
+		 */
 		BST();
+
+		/**
+		 *	Destructor that recursively deletes any dynamically allocated memory
+		 */
 		~BST();
 		
+		/**
+		 *	Insert a value into the binary search tree object
+		 *	@param val the value to be inserted
+		 */
 		void insert_val(T val);
+		
+		/**
+		 *	Insert all the elements in a vector into the BST object
+		 *	@param val_vector the vector of values to be inserted
+		 */ 
 		void insert_val(std::vector<T> val_vector);
+		
+		/**
+		 *	Insert all the elements in a list into the BST object
+		 *	@param val_list the list of values to be inserted
+		 */
 		void insert_val(std::list<T> val_list);
+		
+		/**
+		 *	Delete a value from the BST if it exists
+		 *	@param val the value to be deleted from the BST
+		 *	@return returns true if the value was deleted, returns false if not
+		 */
 		bool delete_val(T val);
 		
+		/**
+		 *	Get the maximum value in the BST
+		 *	@return returns the max value. If the BST is empty, it returns zero
+		 */
 		T get_max();
+		
+		/**
+		 *	Get the minimum value in the BST
+		 *	@return returns the min value. If the BST is empty, it retursn zero
+		 */
 		T get_min();
+		
+		/**
+		 *	Get the smallest element that follows after the input value
+		 *	@param val the input value
+		 *	@return returns the next element. If the argument does not have a successor or the BST is empty, zero is returned
+		 */
 		T get_successor(T val);
+
+		/**
+		 *	Get a sorted vector representation of the BST
+		 *	@return returns the sorted vector
+		 */
 		std::vector<T> get_vector();
+		
+		/**
+		 *	Get a sorted list representation of the BST
+		 *	@return retursn the sorted list
+		 */
 		std::list<T> get_list();
+		
+		/**
+		 *	Check if a value is in the BST
+		 *	@param val the value that is being checked
+		 *	@return returns true if val is in the BST, false otehrwise
+		 */
 		bool exists(T val);
+		
+		/**
+		 *	Returns the number of nodes in the BST
+		 *	@return returns the length member variable
+		 */
 		int get_length();
+		
+		/**
+		 *	Prints the contents of the BST in nondecreasing sorted order
+		 */
 		void print_tree();
 
 	private:
+
+		/**
+		 *	Recursively search for the node that contains the maximum value in the BST
+		 *	@param location the node pointer to begin the search from
+		 *	@return the node pointer that points to the node with the maximum value
+		 */
 		node<T> *search_max(node<T> *location);
+
+		/**
+		 *	Recusively search for the node that contains the minimum value in the BST
+		 *	@param location the node pointer to begin the search from
+		 *	@return the node pointer that points to the node with the minimum value
+		 */
 		node<T> *search_min(node<T> *location);
+		
+		/**
+		 *	Recursively search for a node that contains the desired value
+		 *	@param val the value that is being searched for in the BST
+		 *	@param location the node pointer to begin the search from
+		 *	@return returns a search_result data structure that contains details about the search result
+		 */
 		search_result<T> search_val(T val, node<T> *location); 
+
+		/**
+		 *	Search for the successor of a desired node
+		 *	@param location the pointer to the node whose successor is desired
+		 *	@return return the pointer node to the successor node. If the desired node has no successor, NULL is returned
+		 */
 		node<T> *search_successor(node<T> *location);
+
+		/**
+		 *	Traverse the BST. 2 modes:
+		 *	@param location the pointer to the node that is being traversed
+		 *	@param function the mode
+		 *		function == 0 -> traverse in order, print each node value
+		 *		function == 1 -> traverse in post order, recursively deleting each node
+		 */
 		void order(node<T> *location, int function);
+
+		/**
+		 *	Delete a specified node
+		 *	@param location the pointer to the node to be deleted
+		 */
 		void delete_node(node<T> *location);
+
+		/**
+		 *	Fill a vector with the contents of the BST by reference by traversing the BST in order. The vector is sorted.
+		 *	@param location the pointer to the node whose value will be pushed into the vector
+		 */
 		void fill_vector(std::vector<T>& val_vector, node<T> *location);
+
+		/**
+		 *	Fill a list with the contents of the BST by reference by traversing the BST in order. The list is sorted.
+		 *	@param location the pointer to the node whose value will be pushed into the list
+		 */
 		void fill_list(std::list<T>& val_list, node<T> *location);
 		
+		// Pointer to the node that is the root of the BST
 		node<T> *root;
+		// The number of nodes in the BST
 		int length;
 };
 
+/************************************************  Implementation  ************************************************/
+
+// Constructor
 template<class T>
-std::list<T> BST<T>::get_list(){
-	std::list<T> l;
-	fill_list(l, root);
-	return l;
+BST<T>::BST(){
+	root = NULL;
+	length = 0;
 }
 
+// Destructor
 template<class T>
-void BST<T>::fill_list(std::list<T>& val_list, node<T> *location){
-	if (length > 0){
-		if (location->left != NULL){
-			fill_list(val_list, location->left);
+BST<T>::~BST(){
+	if (length > 0)
+		order(root, 1);
+}
+
+// insert a value
+template<class T>
+void BST<T>::insert_val(T val){
+	search_result<T> result = search_val(val, root);
+	if (result.found == true){
+		node<T> *ptr = new node<T>;
+		ptr->value = val;
+		ptr->parent = result.result_node; 
+		ptr->left = (result.result_node)->left;
+		ptr->right = NULL;
+		(result.result_node)->left = ptr;
+		std::cout << "inserted a copy of " << val << std::endl;
+	}
+	else{
+		if (result.direction == 'R'){
+			node<T> *ptr = new node<T>;
+			ptr->value = val;
+			ptr->parent = result.result_node;
+			ptr->left = NULL;
+			ptr->right = NULL;
+			(result.result_node)->right = ptr;
+			std::cout << "inserted a new node to the right of " << ptr->parent->value << " with value " << val << std::endl;
 		}
-		val_list.push_back(location->value);
-		if (location->right != NULL){
-			fill_list(val_list, location->right);
+		else if (result.direction == 'L'){
+			node<T> *ptr = new node<T>;
+			ptr->value = val;
+			ptr->parent = result.result_node;
+			ptr->left = NULL;
+			ptr->right = NULL;
+			(result.result_node)->left = ptr;
+			std::cout << "inserted a new node to the left of " << ptr->parent->value << " with value " << val << std::endl;
+		}
+		else if (result.direction == 'E'){
+			std::cout << "Error" << std::endl;
+			length--;
+		}
+		else{
+			node<T> *ptr = new node<T>;
+			ptr->value = val;
+			ptr->parent = NULL;
+			ptr->left = NULL;
+			ptr->right = NULL;
+			root = ptr;
+			std::cout << "empty BST, inserting " << val << std::endl;
 		}
 	}
+	length++;
 }
 
-template<class T>
-std::vector<T> BST<T>::get_vector(){
-	std::vector<T> v;
-	fill_vector(v, root);
-	return v;
-}
-
-template<class T>
-void BST<T>::fill_vector(std::vector<T>& val_vector, node<T> *location){
-	if (length > 0){
-		if (location->left != NULL){
-			fill_vector(val_vector, location->left);
-		}
-		val_vector.push_back(location->value);
-		if (location->right != NULL){
-			fill_vector(val_vector, location->right);
-		}
-	}
-}
-
+// insert a vector
 template<class T>
 void BST<T>::insert_val(std::vector<T> val_vector){
 	for (typename std::vector<T>::iterator it = val_vector.begin(); it != val_vector.end(); it++){
@@ -103,6 +256,7 @@ void BST<T>::insert_val(std::vector<T> val_vector){
 	}
 }
 
+// insert a list
 template<class T>
 void BST<T>::insert_val(std::list<T> val_list){
 	for (typename std::list<T>::iterator it = val_list.begin(); it != val_list.end(); it++){
@@ -110,19 +264,22 @@ void BST<T>::insert_val(std::list<T> val_list){
 	}
 }
 
+// delete a value
 template<class T>
-bool BST<T>::exists(T val){
+bool BST<T>::delete_val(T val){
 	search_result<T> result = search_val(val, root);
+	node<T> *location = result.result_node;
 	if (result.found){
-		std::cout << val << " exists in the tree" << std::endl;
+		delete_node(location);
 		return true;
 	}
 	else{
-		std::cout << val << " doesn't exist in the tree" << std::endl;
+		std::cout << val << " not found in tree, nothing deleted" << std::endl; 
 		return false;
 	}
 }
 
+// delete a node
 template<class T>
 void BST<T>::delete_node(node<T> *location){
 	if (location->left == NULL && location->right == NULL){
@@ -192,20 +349,63 @@ void BST<T>::delete_node(node<T> *location){
 	}
 }
 
+// get the max value
 template<class T>
-bool BST<T>::delete_val(T val){
-	search_result<T> result = search_val(val, root);
-	node<T> *location = result.result_node;
-	if (result.found){
-		delete_node(location);
-		return true;
+T BST<T>::get_max(){
+	node<T> *max_node = search_max(root);
+	if (max_node != NULL){
+		std::cout << "max: " << max_node->value << std::endl;
+		return max_node->value;
 	}
 	else{
-		std::cout << val << " not found in tree, nothing deleted" << std::endl; 
-		return false;
+		std::cout << "Warning: empty BST" << std::endl;
+		return 0;
 	}
 }
 
+// get the min value
+template<class T>
+T BST<T>::get_min(){
+	node<T> *min_node = search_min(root);
+	if (min_node != NULL){
+		std::cout << "min: " << min_node->value << std::endl;
+		return min_node->value;
+	}
+	else{
+		std::cout << "Warning: empty BST" << std::endl;
+		return 0;
+	}
+}
+
+// get the max node
+template<class T>
+node<T>* BST<T>::search_max(node<T> *location){
+	if (location->right == NULL){
+		if (length == 0){
+			return NULL;
+		}
+		return location;
+	}
+	else{
+		return search_max(location->right);
+	}
+}
+
+// get the min node
+template<class T>
+node<T>* BST<T>::search_min(node<T> *location){
+	if (location->left == NULL){
+		if (length == 0){
+			return NULL;
+		}
+		return location;
+	}
+	else{
+		return search_min(location->left);
+	}
+}
+
+// get the successor value
 template<class T>
 T BST<T>::get_successor(T val){
 	search_result<T> location = search_val(val, root);
@@ -226,6 +426,7 @@ T BST<T>::get_successor(T val){
 	}
 }	
 
+// get the successor node
 template<class T>
 node<T> *BST<T>::search_successor(node<T> * location){
 	if (location->right != NULL){
@@ -242,6 +443,65 @@ node<T> *BST<T>::search_successor(node<T> * location){
 	}
 }
 
+// get a list
+template<class T>
+std::list<T> BST<T>::get_list(){
+	std::list<T> l;
+	fill_list(l, root);
+	return l;
+}
+
+// fill the list
+template<class T>
+void BST<T>::fill_list(std::list<T>& val_list, node<T> *location){
+	if (length > 0){
+		if (location->left != NULL){
+			fill_list(val_list, location->left);
+		}
+		val_list.push_back(location->value);
+		if (location->right != NULL){
+			fill_list(val_list, location->right);
+		}
+	}
+}
+
+// get a vector 
+template<class T>
+std::vector<T> BST<T>::get_vector(){
+	std::vector<T> v;
+	fill_vector(v, root);
+	return v;
+}
+
+// fill the vector
+template<class T>
+void BST<T>::fill_vector(std::vector<T>& val_vector, node<T> *location){
+	if (length > 0){
+		if (location->left != NULL){
+			fill_vector(val_vector, location->left);
+		}
+		val_vector.push_back(location->value);
+		if (location->right != NULL){
+			fill_vector(val_vector, location->right);
+		}
+	}
+}
+
+// check if val exists
+template<class T>
+bool BST<T>::exists(T val){
+	search_result<T> result = search_val(val, root);
+	if (result.found){
+		std::cout << val << " exists in the tree" << std::endl;
+		return true;
+	}
+	else{
+		std::cout << val << " doesn't exist in the tree" << std::endl;
+		return false;
+	}
+}
+
+// traverse bst
 template<class T>
 void BST<T>::order(node<T> *location, int function){
 	// traverse in order to get the sorted tree
@@ -274,18 +534,7 @@ void BST<T>::order(node<T> *location, int function){
 	}
 }
 
-template<class T>
-BST<T>::BST(){
-	root = NULL;
-	length = 0;
-}
-
-template<class T>
-BST<T>::~BST(){
-	if (length > 0)
-		order(root, 1);
-}
-
+// search for a node
 template<class T>
 search_result<T> BST<T>::search_val(T val, node<T> *location){
 	if (location == NULL){
@@ -331,115 +580,17 @@ search_result<T> BST<T>::search_val(T val, node<T> *location){
 	}
 }
 
-template<class T>
-void BST<T>::insert_val(T val){
-	search_result<T> result = search_val(val, root);
-	if (result.found == true){
-		node<T> *ptr = new node<T>;
-		ptr->value = val;
-		ptr->parent = result.result_node; 
-		ptr->left = (result.result_node)->left;
-		ptr->right = NULL;
-		(result.result_node)->left = ptr;
-		std::cout << "inserted a copy of " << val << std::endl;
-	}
-	else{
-		if (result.direction == 'R'){
-			node<T> *ptr = new node<T>;
-			ptr->value = val;
-			ptr->parent = result.result_node;
-			ptr->left = NULL;
-			ptr->right = NULL;
-			(result.result_node)->right = ptr;
-			std::cout << "inserted a new node to the right of " << ptr->parent->value << " with value " << val << std::endl;
-		}
-		else if (result.direction == 'L'){
-			node<T> *ptr = new node<T>;
-			ptr->value = val;
-			ptr->parent = result.result_node;
-			ptr->left = NULL;
-			ptr->right = NULL;
-			(result.result_node)->left = ptr;
-			std::cout << "inserted a new node to the left of " << ptr->parent->value << " with value " << val << std::endl;
-		}
-		else if (result.direction == 'E'){
-			std::cout << "Error" << std::endl;
-			length--;
-		}
-		else{
-			node<T> *ptr = new node<T>;
-			ptr->value = val;
-			ptr->parent = NULL;
-			ptr->left = NULL;
-			ptr->right = NULL;
-			root = ptr;
-			std::cout << "empty BST, inserting " << val << std::endl;
-		}
-	}
-	length++;
-}
-
+// get the number of nodes
 template<class T>
 int BST<T>::get_length(){
 	return length;
 }
 
-template<class T>
-T BST<T>::get_max(){
-	node<T> *max_node = search_max(root);
-	if (max_node != NULL){
-		std::cout << "max: " << max_node->value << std::endl;
-		return max_node->value;
-	}
-	else{
-		std::cout << "Warning: empty BST" << std::endl;
-		return 0;
-	}
-}
-
-template<class T>
-T BST<T>::get_min(){
-	node<T> *min_node = search_min(root);
-	if (min_node != NULL){
-		std::cout << "min: " << min_node->value << std::endl;
-		return min_node->value;
-	}
-	else{
-		std::cout << "Warning: empty BST" << std::endl;
-		return 0;
-	}
-}
-
+// print contents in order
 template<class T>
 void BST<T>::print_tree(){
 	std::cout << "BST contents: " << std::endl;
 	order(root, 0);
-}
-
-template<class T>
-node<T>* BST<T>::search_max(node<T> *location){
-	if (location->right == NULL){
-		if (length == 0){
-			return NULL;
-		}
-		return location;
-	}
-	else{
-		return search_max(location->right);
-	}
-}
-
-template<class T>
-node<T>* BST<T>::search_min(node<T> *location){
-	if (location->left == NULL){
-		if (length == 0){
-			return NULL;
-		}
-		return location;
-	}
-	else{
-		return search_min(location->left);
-	}
 }
 
 #endif
