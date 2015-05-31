@@ -7,6 +7,7 @@
 #include <iostream>
 #include <vector>
 #include <list>
+#include <string>
 
 /************************************************  Used Data Structures  ************************************************/
 
@@ -29,7 +30,10 @@ struct search_result{
 
 /************************************************  API  ************************************************/
 
-// templated BST header file
+// Templated BST header file
+// Allows for inserting, deleting, and searching in Theta(log(h)) where h is the height of the tree
+// Allows finding the max, min, and successor in Theta(log(h))
+// Allows for sorting a vector or list in Theta(nlog(h)) where n is the number of nodes in the tree
 template<class T> 
 class BST{
 
@@ -39,6 +43,12 @@ class BST{
 		 *	Constructor to initialize member variables
 		 */
 		BST();
+
+		/**
+		 *	Constructor with the option to add a name
+		 *	@param name what the BST will be named
+		 */
+		BST(std::string name);
 
 		/**
 		 *	Destructor that recursively deletes any dynamically allocated memory
@@ -119,6 +129,12 @@ class BST{
 		 */
 		void print_tree();
 
+		/**
+		 * Get the root value
+		 * @returns the value in the root node
+		 */
+		T get_root();
+
 	private:
 
 		/**
@@ -179,8 +195,11 @@ class BST{
 		
 		// Pointer to the node that is the root of the BST
 		node<T> *root;
+
 		// The number of nodes in the BST
 		int length;
+
+		std::string name;
 };
 
 /************************************************  Implementation  ************************************************/
@@ -190,11 +209,21 @@ template<class T>
 BST<T>::BST(){
 	root = NULL;
 	length = 0;
+	name = "untitled BST";
+}
+
+// Constructor with name
+template<class T>
+BST<T>::BST(std::string name){
+	root = NULL;
+	length = 0;
+	this->name = name;
 }
 
 // Destructor
 template<class T>
 BST<T>::~BST(){
+	std::cout << std::endl << "Deleting BST <" << name << ">" << std::endl;
 	if (length > 0)
 		order(root, 1);
 }
@@ -589,8 +618,23 @@ int BST<T>::get_length(){
 // print contents in order
 template<class T>
 void BST<T>::print_tree(){
-	std::cout << "BST contents: " << std::endl;
-	order(root, 0);
+	std::cout << std::endl << "BST <" << name << "> contents: " << std::endl;
+	if (length > 0)
+		order(root, 0);
+	else{
+		std::cout << std::endl << "BST <" << name << "> is empty" << std::endl;
+	}
+}
+
+template<class T>
+T BST<T>::get_root(){
+	if (length > 0){
+		std::cout << "BST <" << name << "> root: " << root->value << std::endl;
+		return root->value;
+	} else{
+		std::cout << "BST <" << name << "> is empty" << std::endl;
+		return 0;
+	}
 }
 
 #endif
